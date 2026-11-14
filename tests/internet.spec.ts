@@ -1,8 +1,13 @@
 import { test, expect } from '@playwright/test';
 
+test.beforeEach('open browser', async ({page})=>{
+
+ await page.goto("https://the-internet.herokuapp.com/");
+
+});
 
 test('The Internet website title validation',async({page})=> {
-  await page.goto("https://the-internet.herokuapp.com/");
+  //await page.goto("https://the-internet.herokuapp.com/");
   await expect(page).toHaveTitle('The Internet');
   await page.getByRole('link', {name:"A/B Testing"}).click();
   await expect(page.getByText("A/B Test Variation 1")).toBeVisible();
@@ -14,7 +19,7 @@ test('The Internet website title validation',async({page})=> {
 
 test('Large form validation', async({page})=>{
 
-  await page.goto("https://the-internet.herokuapp.com/");
+  //await page.goto("https://the-internet.herokuapp.com/");
    await page.locator("//a[text()='Large Form']").click();
  await page.getByLabel("First name").fill("test_first_name");
  await page.getByRole('textbox', {name:'Last name'}).fill("test_last_name");
@@ -35,6 +40,48 @@ await page.locator("input[value='automation']").check();
 
   await page.waitForTimeout(3000);
   await page.getByRole('button', {name:'Submit'}).click();
+});
+
+test('keyboard&Mouse Operations', async ({page}) =>{
+
+    //await page.goto("https://the-internet.herokuapp.com/");
+
+    // mousehover operation
+    //await page.getByRole('link', {name:"Dropdown", exact: true}).hover();
+    await page.getByText("Dropdown").last().hover();
+  await page.getByText("Drag and Drop").click();
+  const  source = page.locator("#column-a");
+  const traget  = page.locator("#column-b");
+  await source.dragTo(traget);
+
+});
+
+test('validate windows', async ({page})=>{
+  await page.getByText("Multiple Windows").click();
+  const [newPage] = await Promise.all([page.context().waitForEvent('page'), 
+  await page.getByRole('link', {name: "Click Here"}).click()]);
+  console.log(await newPage.title())
+  await newPage.close();
+  // Return to parent window
+  await page.bringToFront();
+  console.log(await page.title());
+
+});
+
+test('farmes validation', async ({page}) =>{
+
+  await page.getByRole("link",{name: "Frames", exact: true}).click();
+  await page.getByRole('link', {name: "iFrame"}).click();
+  //await page.locator("//span[text()='File']").click();
+  await page.frameLocator("//iframe[@title='Rich Text Area']").locator("//body[@id='tinymce']").fill("this is iframe text");
+    await page.locator("//span[text()='File']").click();
+
+  
+
+
+
+
+
 });
 
 
